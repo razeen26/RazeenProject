@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Base URL for the FastAPI backend
-const API_BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = "https://razeenproject.onrender.com";
 
 /**
  * Upload a new image with metadata and status.
