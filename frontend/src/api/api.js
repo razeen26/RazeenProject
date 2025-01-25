@@ -3,6 +3,7 @@ import axios from "axios";
 // Base URL for the FastAPI backend
 const BASE_URL = "https://razeenproject.onrender.com";
 
+
 /**
  * Upload a new image with metadata and status.
  * @param {Object} imageData - The image data to upload.
