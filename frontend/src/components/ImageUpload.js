@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+const BASE_URL = "https://razeenproject.onrender.com";
+
 const ImageUpload = () => {
   const [selectedFile, setSelectedFile] = useState(null); // State for the selected image file
   const [metadata, setMetadata] = useState(""); // State for the metadata input
@@ -24,7 +26,7 @@ const ImageUpload = () => {
     formData.append("metadata", metadata); // Add metadata to form data
 
     try {
-      await axios.post("http://localhost:8000/images/", formData); // Upload image and metadata
+      await axios.post(`${BASE_URL}/images/`, formData); // Upload image and metadata
       setSelectedFile(null); // Reset the file input
       setMetadata(""); // Reset the metadata input
       window.location.reload(); // Reload the page to show the updated image list

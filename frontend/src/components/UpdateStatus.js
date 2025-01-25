@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { updateImageStatus } from "../api/api";
+import axios from "axios";
+
+const BASE_URL = "https://razeenproject.onrender.com";
 
 const UpdateStatus = () => {
   const [imageId, setImageId] = useState("");
@@ -8,7 +10,9 @@ const UpdateStatus = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await updateImageStatus(imageId, status);
+      const response = await axios.patch(`${BASE_URL}/images/${imageId}/metadata`, {
+        status,
+      });
       console.log("Updated Status:", response);
       alert("Status updated successfully!");
     } catch (error) {

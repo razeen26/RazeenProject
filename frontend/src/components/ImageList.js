@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+// Replace localhost with your deployed backend URL
+const BASE_URL = "https://razeenproject.onrender.com";
+
 const ImageList = ({ images, refreshImages }) => {
   const [selectedImage, setSelectedImage] = useState(null); // Selected image for editing or deletion
   const [showEditModal, setShowEditModal] = useState(false); // Edit modal state
@@ -13,7 +16,7 @@ const ImageList = ({ images, refreshImages }) => {
 
     try {
       await axios.patch(
-        `http://localhost:8000/images/${selectedImage.id}/metadata`,
+        `${BASE_URL}/images/${selectedImage.id}/metadata`,
         {
           metadata: newMetadata,
           status: newStatus,
@@ -30,7 +33,7 @@ const ImageList = ({ images, refreshImages }) => {
   const handleDelete = async () => {
     if (!selectedImage) return;
     try {
-      await axios.delete(`http://localhost:8000/images/${selectedImage.id}`);
+      await axios.delete(`${BASE_URL}/images/${selectedImage.id}`);
       setShowDeleteModal(false); // Close modal
       refreshImages(); // Refresh image list
     } catch (error) {
@@ -55,7 +58,7 @@ const ImageList = ({ images, refreshImages }) => {
             <div className="col-md-4 mb-4" key={image.id}>
               <div className="card shadow-sm">
                 <img
-                  src={`http://localhost:8000${image.file_path}`}
+                  src={`${BASE_URL}${image.file_path}`}
                   alt="Uploaded"
                   className="card-img-top"
                   style={{ height: "200px", objectFit: "cover" }}

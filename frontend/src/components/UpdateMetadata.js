@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+const BASE_URL = "https://razeenproject.onrender.com";
+
 const UpdateMetadata = ({ imageId, onUpdate }) => {
   const [metadata, setMetadata] = useState("");
   const [status, setStatus] = useState("");
 
   const handleUpdate = async () => {
     try {
-      await axios.patch(`http://localhost:8000/images/${imageId}/metadata`, {
+      await axios.patch(`${BASE_URL}/images/${imageId}/metadata`, {
         metadata,
         status,
       });
