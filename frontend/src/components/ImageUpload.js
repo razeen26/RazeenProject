@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const BASE_URL = "https://razeenproject.onrender.com";
 
-const ImageUpload = () => {
+const ImageUpload = ({ refreshImages }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [metadata, setMetadata] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,6 +34,9 @@ const ImageUpload = () => {
       toast.success("Image uploaded successfully!");
       setSelectedFile(null);
       setMetadata("");
+      if (refreshImages) {
+        refreshImages(); // Refresh the image list if the function is provided
+      }
     } catch (error) {
       console.error("Error uploading image:", error);
       toast.error("Failed to upload image. Please try again.");
@@ -86,8 +89,5 @@ const ImageUpload = () => {
     </div>
   );
 };
-
-// Initialize Toastify
-toast.configure();
 
 export default ImageUpload;

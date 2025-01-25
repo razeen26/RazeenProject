@@ -212,7 +212,4 @@ const ImageList = ({ images, refreshImages }) => {
   );
 };
 
-// Initialize Toastify
-toast.configure();
-
 export default ImageList;
