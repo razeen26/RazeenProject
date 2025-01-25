@@ -1,13 +1,13 @@
 import shutil
-from fastapi import FastAPI, UploadFile, File, HTTPException, Depends, Form
+from fastapi import FastAPI, UploadFile, File, HTTPException, Depends, Form, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from pathlib import Path
-# from .database import SessionLocal, engine
-# from . import models, schemas, crud
 from app.database import SessionLocal, engine
 from app import models, schemas, crud
+import time  # Simulate processing delay
+import cv2  # Replace with actual processing library if needed
 
 
 # Initialize database models
@@ -111,3 +111,45 @@ def update_image(
     if not image:
         raise HTTPException(status_code=404, detail="Image not found")
     return image
+
+
+# New Background Processing Logic
+def process_pending_images(db: Session):
+    """
+    Fetch all pending images, process them, and update their metadata.
+    """
+    pending_images = db.query(models.Image).filter(models.Image.status == "Pending").all()
+
+    for image in pending_images:
+        try:
+            print(f"Processing image {image.id}: {image.file_path}")
+
+            # Simulate image processing (replace with real logic)
+            detected_marks = simulate_image_processing(image.file_path)
+
+            # Update image metadata and status
+            image.image_metadata = f"Detected Marks: {detected_marks}"
+            image.status = "Processed"
+            db.commit()
+            print(f"Processed image {image.id} successfully.")
+        except Exception as e:
+            print(f"Failed to process image {image.id}: {e}")
+            db.rollback()
+            continue
+
+def simulate_image_processing(file_path: str) -> int:
+    """
+    Simulate image processing to detect marks (replace with real logic).
+    """
+    # Simulate delay or real processing here
+    time.sleep(2)  # Simulate processing delay
+    return 85  # Example: Detected marks (replace with actual detection)
+
+
+@app.post("/process-images")
+def process_images(background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    """
+    Endpoint to trigger background processing of pending images.
+    """
+    background_tasks.add_task(process_pending_images, db)
+    return {"message": "Background processing of pending images initiated."}
