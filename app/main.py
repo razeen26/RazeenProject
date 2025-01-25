@@ -41,7 +41,7 @@ def get_db():
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to the Image API!"}
+    return {"message": "Razeen to the Image API!"}
 
 
 @app.post("/images/", response_model=schemas.ImageRead)
