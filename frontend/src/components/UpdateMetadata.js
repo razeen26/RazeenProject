@@ -1,23 +1,29 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const BASE_URL = "https://razeenproject.onrender.com";
 
 const UpdateMetadata = ({ imageId, onUpdate }) => {
   const [metadata, setMetadata] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState("Pending");
+  const [loading, setLoading] = useState(false);
 
   const handleUpdate = async () => {
     try {
+      setLoading(true);
       await axios.patch(`${BASE_URL}/images/${imageId}/metadata`, {
         metadata,
         status,
       });
-      alert("Metadata updated successfully!");
+      toast.success("Metadata updated successfully!"); // Success notification
       onUpdate(); // Notify parent to refresh the list
     } catch (error) {
       console.error("Error updating metadata:", error);
-      alert("Failed to update metadata.");
+      toast.error("Failed to update metadata. Please try again."); // Error notification
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -83,8 +89,15 @@ const UpdateMetadata = ({ imageId, onUpdate }) => {
                 type="button"
                 className="btn btn-primary"
                 onClick={handleUpdate}
+                disabled={loading}
               >
-                Save Changes
+                {loading ? (
+                  <div className="spinner-border spinner-border-sm" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                ) : (
+                  "Save Changes"
+                )}
               </button>
             </div>
           </div>
@@ -93,5 +106,8 @@ const UpdateMetadata = ({ imageId, onUpdate }) => {
     </div>
   );
 };
+
+// Initialize Toastify
+toast.configure();
 
 export default UpdateMetadata;

@@ -1,38 +1,44 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const BASE_URL = "https://razeenproject.onrender.com";
 
 const ImageUpload = () => {
-  const [selectedFile, setSelectedFile] = useState(null); // State for the selected image file
-  const [metadata, setMetadata] = useState(""); // State for the metadata input
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [metadata, setMetadata] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleFileChange = (event) => {
-    setSelectedFile(event.target.files[0]); // Update the selected file state
+    setSelectedFile(event.target.files[0]);
   };
 
   const handleMetadataChange = (event) => {
-    setMetadata(event.target.value); // Update the metadata state
+    setMetadata(event.target.value);
   };
 
   const handleUpload = async () => {
     if (!selectedFile || !metadata) {
-      alert("Please select an image and provide metadata!");
+      toast.error("Please select an image and provide metadata!");
       return;
     }
 
     const formData = new FormData();
-    formData.append("file", selectedFile); // Add the image file to form data
-    formData.append("metadata", metadata); // Add metadata to form data
+    formData.append("file", selectedFile);
+    formData.append("metadata", metadata);
 
     try {
-      await axios.post(`${BASE_URL}/images/`, formData); // Upload image and metadata
-      setSelectedFile(null); // Reset the file input
-      setMetadata(""); // Reset the metadata input
-      window.location.reload(); // Reload the page to show the updated image list
+      setLoading(true);
+      await axios.post(`${BASE_URL}/images/`, formData);
+      toast.success("Image uploaded successfully!");
+      setSelectedFile(null);
+      setMetadata("");
     } catch (error) {
       console.error("Error uploading image:", error);
-      alert("Failed to upload image. Please try again.");
+      toast.error("Failed to upload image. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,11 +70,24 @@ const ImageUpload = () => {
           onChange={handleMetadataChange}
         />
       </div>
-      <button className="btn btn-primary" onClick={handleUpload}>
-        Upload
+      <button
+        className="btn btn-primary"
+        onClick={handleUpload}
+        disabled={loading}
+      >
+        {loading ? (
+          <div className="spinner-border spinner-border-sm" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        ) : (
+          "Upload"
+        )}
       </button>
     </div>
   );
 };
+
+// Initialize Toastify
+toast.configure();
 
 export default ImageUpload;

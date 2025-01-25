@@ -1,48 +1,56 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-// Replace localhost with your deployed backend URL
 const BASE_URL = "https://razeenproject.onrender.com";
 
 const ImageList = ({ images, refreshImages }) => {
-  const [selectedImage, setSelectedImage] = useState(null); // Selected image for editing or deletion
-  const [showEditModal, setShowEditModal] = useState(false); // Edit modal state
-  const [showDeleteModal, setShowDeleteModal] = useState(false); // Delete modal state
-  const [newMetadata, setNewMetadata] = useState(""); // New metadata for editing
-  const [newStatus, setNewStatus] = useState(""); // New status for editing
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [newMetadata, setNewMetadata] = useState("");
+  const [newStatus, setNewStatus] = useState("");
+  const [loadingEdit, setLoadingEdit] = useState(false);
+  const [loadingDelete, setLoadingDelete] = useState(false);
 
   const handleEdit = async () => {
     if (!selectedImage) return;
 
     try {
-      await axios.patch(
-        `${BASE_URL}/images/${selectedImage.id}/metadata`,
-        {
-          metadata: newMetadata,
-          status: newStatus,
-        }
-      );
-      setShowEditModal(false); // Close modal
-      refreshImages(); // Refresh image list
+      setLoadingEdit(true);
+      await axios.patch(`${BASE_URL}/images/${selectedImage.id}/metadata`, {
+        metadata: newMetadata,
+        status: newStatus,
+      });
+      toast.success("Image metadata updated successfully!");
+      setShowEditModal(false);
+      refreshImages();
     } catch (error) {
       console.error("Error updating image:", error);
-      alert("Failed to update image. Please try again.");
+      toast.error("Failed to update image. Please try again.");
+    } finally {
+      setLoadingEdit(false);
     }
   };
 
   const handleDelete = async () => {
     if (!selectedImage) return;
+
     try {
+      setLoadingDelete(true);
       await axios.delete(`${BASE_URL}/images/${selectedImage.id}`);
-      setShowDeleteModal(false); // Close modal
-      refreshImages(); // Refresh image list
+      toast.success("Image deleted successfully!");
+      setShowDeleteModal(false);
+      refreshImages();
     } catch (error) {
       console.error("Error deleting image:", error);
-      alert("Failed to delete image. Please try again.");
+      toast.error("Failed to delete image. Please try again.");
+    } finally {
+      setLoadingDelete(false);
     }
   };
 
-  // Sort images by updated_at in descending order
   const sortedImages = images.sort(
     (a, b) => new Date(b.updated_at) - new Date(a.updated_at)
   );
@@ -141,8 +149,18 @@ const ImageList = ({ images, refreshImages }) => {
                 >
                   Cancel
                 </button>
-                <button className="btn btn-primary" onClick={handleEdit}>
-                  Save Changes
+                <button
+                  className="btn btn-primary"
+                  onClick={handleEdit}
+                  disabled={loadingEdit}
+                >
+                  {loadingEdit ? (
+                    <div className="spinner-border spinner-border-sm">
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                  ) : (
+                    "Save Changes"
+                  )}
                 </button>
               </div>
             </div>
@@ -172,8 +190,18 @@ const ImageList = ({ images, refreshImages }) => {
                 >
                   Cancel
                 </button>
-                <button className="btn btn-danger" onClick={handleDelete}>
-                  Delete
+                <button
+                  className="btn btn-danger"
+                  onClick={handleDelete}
+                  disabled={loadingDelete}
+                >
+                  {loadingDelete ? (
+                    <div className="spinner-border spinner-border-sm">
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                  ) : (
+                    "Delete"
+                  )}
                 </button>
               </div>
             </div>
@@ -183,5 +211,8 @@ const ImageList = ({ images, refreshImages }) => {
     </div>
   );
 };
+
+// Initialize Toastify
+toast.configure();
 
 export default ImageList;
