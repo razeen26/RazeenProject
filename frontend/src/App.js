@@ -3,12 +3,16 @@ import ImageUpload from "./components/ImageUpload";
 import ImageList from "./components/ImageList";
 import axios from "axios";
 
+// Use the deployed backend URL
+const BASE_URL = "https://razeenproject.onrender.com";
+
 const App = () => {
   const [images, setImages] = useState([]);
 
   const refreshImages = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/images/");
+      // Update the URL to use the BASE_URL
+      const response = await axios.get(`${BASE_URL}/images/`);
       setImages(response.data); // Assuming backend provides sorted data
     } catch (error) {
       console.error("Error fetching images:", error);
